@@ -21,6 +21,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,16 +32,24 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dev.alpherg.fileserver.ui.AppViewModel
+import dev.alpherg.fileserver.ui.components.FSTopBar
+import kotlinx.coroutines.launch
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(openDrawer: suspend () -> Unit) {
     val appViewModel = hiltViewModel<AppViewModel>()
     val ipAddress by appViewModel.deviceIP.collectAsState()
 
     val viewModel = hiltViewModel<HomeViewModel>()
     val state by viewModel.state.collectAsState()
 
-    Scaffold { innerPadding ->
+    val scope = rememberCoroutineScope()
+
+    Scaffold(
+        topBar = {
+            FSTopBar { scope.launch { openDrawer() } }
+        }
+    ) { innerPadding ->
         Surface(modifier = Modifier.padding(innerPadding)) {
             Box(
                 modifier = Modifier.fillMaxSize(),
