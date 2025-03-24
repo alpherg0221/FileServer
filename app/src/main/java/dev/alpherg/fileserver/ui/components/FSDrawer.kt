@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.QuestionMark
-import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.DrawerState
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalDrawerSheet
@@ -19,7 +19,6 @@ import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
@@ -51,6 +50,7 @@ abstract class AppDest {
 @Composable
 fun <T : AppDest> DrawerApp(
     navController: NavHostController,
+    drawerState: DrawerState,
     appDest: T,
     drawerHeader: @Composable () -> Unit = {},
     drawerItems: List<RouteInfo>,
@@ -61,9 +61,6 @@ fun <T : AppDest> DrawerApp(
 
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route ?: appDest.homeRoute.route
-
-    // ドロワーの状態
-    val drawerState = rememberDrawerState(DrawerValue.Closed)
 
     // ナビゲーションドロワー
     ModalNavigationDrawer(

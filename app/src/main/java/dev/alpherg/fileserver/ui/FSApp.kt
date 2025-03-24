@@ -11,8 +11,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.SettingsInputAntenna
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -36,6 +38,9 @@ import dev.alpherg.fileserver.ui.theme.FileServerTheme
 fun FSApp() {
     val navController = rememberNavController()
 
+    // ドロワーの状態
+    val drawerState = rememberDrawerState(DrawerValue.Closed)
+
     val appDest = object : AppDest() {
         val settingRoute = RouteInfo(
             icon = Icons.Rounded.Settings,
@@ -57,6 +62,10 @@ fun FSApp() {
     val appViewModel = hiltViewModel<AppViewModel>()
     val deviceIP by appViewModel.deviceIP.collectAsState()
 
+    val openDrawer: suspend () -> Unit = {
+        drawerState.open()
+    }
+
     val onBack: () -> Unit = {
         navController.popBackStack()
     }
@@ -64,6 +73,7 @@ fun FSApp() {
     FileServerTheme {
         DrawerApp(
             navController = navController,
+            drawerState = drawerState,
             appDest = appDest,
             drawerItems = drawerItems,
             drawerHeader = {
@@ -89,7 +99,7 @@ fun FSApp() {
             }
         ) {
             composable(appDest.homeRoute.route) {
-                HomeScreen()
+                HomeScreen(openDrawer = openDrawer)
             }
             composable(appDest.settingRoute.route) {
                 SettingsScreen(onBack = onBack)
