@@ -15,7 +15,7 @@ val provider = GoogleFont.Provider(
     certificates = R.array.com_google_android_gms_fonts_certs
 )
 
-val appFont = GoogleFont(name = "Zen Maru Gothic")
+val appFont = GoogleFont(name = "Roboto")
 
 val appFamily = FontFamily(
     Font(googleFont = appFont, fontProvider = provider)

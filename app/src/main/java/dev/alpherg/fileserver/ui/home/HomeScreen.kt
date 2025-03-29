@@ -8,16 +8,22 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ConnectingAirports
+import androidx.compose.material.icons.rounded.Hotel
 import androidx.compose.material.icons.rounded.NightsStay
+import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.RocketLaunch
+import androidx.compose.material.icons.rounded.Stop
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -27,8 +33,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dev.alpherg.fileserver.ui.AppViewModel
@@ -57,27 +63,6 @@ fun HomeScreen(openDrawer: suspend () -> Unit) {
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
-                        ipAddress,
-                        fontWeight = FontWeight.Black,
-                        textDecoration = TextDecoration.Underline,
-                        style = MaterialTheme.typography.headlineLarge,
-                    )
-
-                    Spacer(Modifier.height(36.dp))
-
-                    when (state) {
-                        HomeState.Running -> Indicator(color = Color.Red)
-
-                        HomeState.Initializing -> Indicator(fixed = false, color = Color.Green)
-
-                        HomeState.Stopping -> Indicator(fixed = false, color = Color.Red)
-
-                        HomeState.Stopped -> Indicator(color = Color.Green)
-                    }
-
-                    Spacer(Modifier.height(36.dp))
-
-                    Text(
                         "Server is ${state.name}",
                         fontWeight = FontWeight.Black,
                         style = MaterialTheme.typography.headlineLarge,
@@ -86,29 +71,65 @@ fun HomeScreen(openDrawer: suspend () -> Unit) {
                             HomeState.Stopping, HomeState.Stopped -> Color.Red
                         }
                     )
-                }
 
-                when (state) {
-                    HomeState.Running -> IndicatorButton("Stop Server", color = Color.Red) {
-                        viewModel.stopServer()
+                    Spacer(Modifier.height(36.dp))
+
+                    when (state) {
+                        HomeState.Running -> Indicator(
+                            color = Color.Green,
+                            icon = Icons.Rounded.ConnectingAirports,
+                        )
+
+                        HomeState.Initializing -> Indicator(
+                            fixed = false,
+                            color = Color.Green,
+                            icon = Icons.Rounded.RocketLaunch,
+                        )
+
+                        HomeState.Stopping -> Indicator(
+                            fixed = false,
+                            color = Color.Red,
+                            icon = Icons.Rounded.NightsStay,
+                        )
+
+                        HomeState.Stopped -> Indicator(
+                            color = Color.Red,
+                            icon = Icons.Rounded.Hotel,
+                        )
                     }
 
-                    HomeState.Initializing -> Image(
-                        imageVector = Icons.Rounded.RocketLaunch,
-                        contentDescription = null,
-                        modifier = Modifier.size(128.dp),
-                        colorFilter = ColorFilter.tint(Color.Green)
-                    )
+                    Spacer(Modifier.height(36.dp))
 
-                    HomeState.Stopping -> Image(
-                        imageVector = Icons.Rounded.NightsStay,
-                        contentDescription = null,
-                        modifier = Modifier.size(128.dp),
-                        colorFilter = ColorFilter.tint(Color.Red)
-                    )
+                    when (state) {
+                        HomeState.Running -> ChangeStateButton(
+                            onClick = viewModel::stopServer,
+                            icon = Icons.Rounded.Stop,
+                            text = "Stop Server",
+                            color = Color.Red,
+                        )
 
-                    HomeState.Stopped -> IndicatorButton("Start Server", color = Color.Green) {
-                        viewModel.startServer()
+                        HomeState.Initializing -> ChangeStateButton(
+                            onClick = {},
+                            icon = Icons.Rounded.PlayArrow,
+                            text = "Start Server",
+                            color = Color.Green,
+                            enabled = false,
+                        )
+
+                        HomeState.Stopping -> ChangeStateButton(
+                            onClick = {},
+                            icon = Icons.Rounded.Stop,
+                            text = "Stop Server",
+                            color = Color.Red,
+                            enabled = false,
+                        )
+
+                        HomeState.Stopped -> ChangeStateButton(
+                            onClick = viewModel::startServer,
+                            icon = Icons.Rounded.PlayArrow,
+                            color = Color.Green,
+                            text = "Start Server",
+                        )
                     }
                 }
             }
@@ -120,44 +141,55 @@ fun HomeScreen(openDrawer: suspend () -> Unit) {
 fun Indicator(
     fixed: Boolean = true,
     color: Color = MaterialTheme.colorScheme.primary,
+    icon: ImageVector,
 ) {
     val indicatorSize = 320.dp
     val indicatorStrokeWidth = 12.dp
 
-    return if (fixed) {
-        CircularProgressIndicator(
-            progress = { 1f },
-            modifier = Modifier.size(indicatorSize),
-            color = color,
-            strokeWidth = indicatorStrokeWidth,
-        )
-    } else {
-        CircularProgressIndicator(
-            modifier = Modifier.size(indicatorSize),
-            color = color,
-            strokeWidth = indicatorStrokeWidth,
-            strokeCap = StrokeCap.Butt,
+    Box(contentAlignment = Alignment.Center) {
+        when (fixed) {
+            true -> CircularProgressIndicator(
+                progress = { 1f },
+                modifier = Modifier.size(indicatorSize),
+                color = color,
+                strokeWidth = indicatorStrokeWidth,
+            )
+
+            false -> CircularProgressIndicator(
+                modifier = Modifier.size(indicatorSize),
+                color = color,
+                strokeWidth = indicatorStrokeWidth,
+                strokeCap = StrokeCap.Butt,
+            )
+        }
+
+        Image(
+            imageVector = icon,
+            contentDescription = null,
+            modifier = Modifier.size(128.dp),
+            colorFilter = ColorFilter.tint(color)
         )
     }
 }
 
 @Composable
-fun IndicatorButton(
-    text: String,
-    color: Color = MaterialTheme.colorScheme.primary,
+fun ChangeStateButton(
     onClick: () -> Unit,
+    icon: ImageVector,
+    text: String,
+    color: Color,
+    enabled: Boolean = true,
 ) {
-    val indicatorSize = 320.dp
-    val indicatorStrokeWidth = 12.dp
-
-    return TextButton(
-        modifier = Modifier.size(indicatorSize - indicatorStrokeWidth),
+    OutlinedButton(
         onClick = onClick,
-        colors = ButtonDefaults.textButtonColors().copy(
-            containerColor = color.copy(alpha = 0.1f),
+        contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
+        enabled = enabled,
+        colors = ButtonDefaults.outlinedButtonColors().copy(
             contentColor = color,
         )
     ) {
-        Text(text, style = MaterialTheme.typography.headlineLarge)
+        Icon(imageVector = icon, contentDescription = null)
+        Spacer(Modifier.width(8.dp))
+        Text(text)
     }
 }
