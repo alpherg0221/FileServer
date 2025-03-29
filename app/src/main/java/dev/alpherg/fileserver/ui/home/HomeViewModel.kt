@@ -2,7 +2,6 @@ package dev.alpherg.fileserver.ui.home
 
 import android.content.Context
 import android.content.Intent
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -32,15 +31,15 @@ class HomeViewModel @Inject constructor(
 
     fun startServer() = viewModelScope.launch {
         _state.update { HomeState.Initializing }
-        delay(500)
-        ContextCompat.startForegroundService(context, intent)
+        delay(1000)
+        //ContextCompat.startForegroundService(context, intent)
         _state.update { HomeState.Running }
     }
 
     fun stopServer() = viewModelScope.launch {
         _state.update { HomeState.Stopping }
-        delay(500)
-        context.stopService(intent)
+        delay(1000)
+        //context.stopService(intent)
         _state.update { HomeState.Stopped }
     }
 }
