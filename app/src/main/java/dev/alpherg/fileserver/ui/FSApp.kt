@@ -31,6 +31,7 @@ import dev.alpherg.fileserver.ui.components.AppDest
 import dev.alpherg.fileserver.ui.components.DrawerApp
 import dev.alpherg.fileserver.ui.components.RouteInfo
 import dev.alpherg.fileserver.ui.home.HomeScreen
+import dev.alpherg.fileserver.ui.info.InfoScreen
 import dev.alpherg.fileserver.ui.settings.SettingsScreen
 import dev.alpherg.fileserver.ui.theme.FileServerTheme
 
@@ -103,6 +104,9 @@ fun FSApp() {
             }
             composable(appDest.settingRoute.route) {
                 SettingsScreen(onBack = onBack)
+            }
+            composable(appDest.infoRoute.route) {
+                InfoScreen(onBack = onBack)
             }
         }
     }
