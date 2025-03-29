@@ -77,6 +77,10 @@ fun FSApp() {
             drawerState = drawerState,
             appDest = appDest,
             drawerItems = drawerItems,
+            gesturesDisabledRoute = listOf(
+                appDest.settingRoute.route,
+                appDest.infoRoute.route,
+            ),
             drawerHeader = {
                 Row(
                     modifier = Modifier.padding(start = 16.dp, end = 24.dp),
